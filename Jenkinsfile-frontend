@@ -288,7 +288,6 @@ def deployFrontendToEKS(
         echo "Applying database Kubernetes manifests to ${namespace}"
 
         kubectl apply \
-           
             -f kube/service.yml \
             -f kube/frontend.yml \
             -f kube/ingress.yml
