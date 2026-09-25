@@ -275,7 +275,6 @@ def deployBackendToEKS(
     def namespace = "app-${environment}"
 
     sh """
-
         aws eks update-kubeconfig \
             --region ${AWS_REGION} \
             --name ${EKS_CLUSTER}
@@ -283,24 +282,25 @@ def deployBackendToEKS(
         echo "Checking namespace ${namespace}"
 
         kubectl get namespace ${namespace} || \
-        kubectl create namespace ${namespace}    
+        kubectl create namespace ${namespace}
 
-        echo "Applying database Kubernetes manifests to ${namespace}"
+        echo "Applying backend Kubernetes manifests to ${namespace}"
 
         kubectl apply \
-           
             -f kube/service-backend.yml \
             -f kube/backend.yml \
             -n ${namespace}
 
+        echo "Updating backend image"
 
         kubectl -n ${namespace} set image deployment/app1-backend \
             backend=${image}:${imageTag}
 
+        echo "Waiting for backend rollout"
+
         kubectl -n ${namespace} rollout status deployment/app1-backend
     """
 }
-
 
 // =============================================================
 // FUNCTION: Promote Docker Image
